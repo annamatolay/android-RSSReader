@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">RSSReader</string>
+    <string name="btn_fetch">FETCH</string>
+    <string name="hint_source">RSS feed source</string>
+    <string name="feed_title">Feed Title:</string>
+    <string name="feed_description">Feed Description:</string>
+    <string name="feed_link">Feed Link:</string>
+</resources>
