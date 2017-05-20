@@ -1,5 +1,7 @@
 package app.matolaypal.com.rssreader;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +17,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.share.model.ShareLinkContent;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -22,13 +32,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private final String TAG = this.getClass().getSimpleName() + " <#> ";
 
     private RecyclerView mRecyclerView;
     private EditText mEditText;
@@ -70,6 +81,14 @@ public class MainActivity extends AppCompatActivity {
                 new FetchFeedTask().execute((Void) null);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int responseCode, Intent data)
+    {
+        super.onActivityResult(requestCode, responseCode, data);
+        FacebookController.getCallbackManager().onActivityResult(requestCode, responseCode, data);
+        Toast.makeText(this, "Sharing completed!", Toast.LENGTH_SHORT).show();
     }
 
     private class FetchFeedTask extends AsyncTask<Void, Void, Boolean> {
@@ -116,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 mFeedDescriptionTextView.setText("Feed Description: " + mFeedDescription);
                 mFeedLinkTextView.setText("Feed Link: " + mFeedLink);
                 // Fill RecyclerView
-                mRecyclerView.setAdapter(new RssFeedListAdapter(mFeedModelList));
+                mRecyclerView.setAdapter(new RssFeedListAdapter(MainActivity.this, mFeedModelList));
             } else {
                 Toast.makeText(MainActivity.this,
                         "Enter a valid Rss feed url",
@@ -159,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                Log.d("MainActivity", "Parsing name ==> " + name);
+                Log.d(TAG, "Parsing name: " + name);
                 String result = "";
                 if (xmlPullParser.next() == XmlPullParser.TEXT) {
                     result = xmlPullParser.getText();

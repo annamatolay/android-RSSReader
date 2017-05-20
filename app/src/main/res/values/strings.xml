@@ -6,4 +6,5 @@
     <string name="feed_title">Feed Title:</string>
     <string name="feed_description">Feed Description:</string>
     <string name="feed_link">Feed Link:</string>
+    <string name="i_shr_title">Share on Facebook</string>
 </resources>
