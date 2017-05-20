@@ -3,6 +3,7 @@ package app.matolaypal.com.rssreader;
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,6 +60,12 @@ class RssFeedListAdapter
                             case R.id.item_share:
                                 FacebookController fbc = new FacebookController(context);
                                 fbc.share(rssFeedModel);
+                                break;
+                            case R.id.item_delete:
+                                mRssFeedModels.remove(holder.getAdapterPosition());
+                                notifyItemRemoved(holder.getAdapterPosition());
+                                notifyItemRangeChanged(holder.getAdapterPosition(),
+                                        mRssFeedModels.size());
                                 break;
                         }
                         return false;

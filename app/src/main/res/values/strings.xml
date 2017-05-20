@@ -7,4 +7,5 @@
     <string name="feed_description">Feed Description:</string>
     <string name="feed_link">Feed Link:</string>
     <string name="i_shr_title">Share on Facebook</string>
+    <string name="i_del_title">Delete item from list</string>
 </resources>

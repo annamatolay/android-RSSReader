@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Xml;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mFeedLinkTextView;
     private TextView mFeedDescriptionTextView;
 
+    private RssFeedListAdapter listAdapter;
     private List<RssFeedModel> mFeedModelList;
     private String mFeedTitle;
     private String mFeedLink;
@@ -81,6 +83,33 @@ public class MainActivity extends AppCompatActivity {
                 new FetchFeedTask().execute((Void) null);
             }
         });
+
+
+        ItemTouchHelper.SimpleCallback simpleCallbackItemTouchHelper =
+                new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                                  RecyclerView.ViewHolder target) {
+                final int fromPosition = viewHolder.getAdapterPosition();
+                final int toPosition = target.getAdapterPosition();
+                RssFeedModel prev = mFeedModelList.remove(fromPosition);
+                mFeedModelList.add(toPosition > fromPosition ? toPosition - 1 : toPosition, prev);
+                listAdapter.notifyItemMoved(fromPosition, toPosition);
+                listAdapter.notifyItemMoved(fromPosition, toPosition);
+                return true;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                mFeedModelList.remove(position);
+                listAdapter.notifyDataSetChanged();
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallbackItemTouchHelper);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     @Override
@@ -134,8 +163,8 @@ public class MainActivity extends AppCompatActivity {
                 mFeedTitleTextView.setText("Feed Title: " + mFeedTitle);
                 mFeedDescriptionTextView.setText("Feed Description: " + mFeedDescription);
                 mFeedLinkTextView.setText("Feed Link: " + mFeedLink);
-                // Fill RecyclerView
-                mRecyclerView.setAdapter(new RssFeedListAdapter(MainActivity.this, mFeedModelList));
+                listAdapter = new RssFeedListAdapter(MainActivity.this, mFeedModelList);
+                mRecyclerView.setAdapter(listAdapter);
             } else {
                 Toast.makeText(MainActivity.this,
                         "Enter a valid Rss feed url",
