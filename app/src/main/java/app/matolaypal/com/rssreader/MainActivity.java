@@ -1,6 +1,9 @@
 package app.matolaypal.com.rssreader;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -173,9 +176,15 @@ public class MainActivity extends AppCompatActivity {
                 listAdapter = new RssFeedListAdapter(MainActivity.this, mFeedModelList);
                 mRecyclerView.setAdapter(listAdapter);
             } else {
-                Toast.makeText(MainActivity.this,
-                        "Enter a valid Rss feed url",
-                        Toast.LENGTH_LONG).show();
+                if (!isNetworkAvailable()) {
+                    Toast.makeText(MainActivity.this,
+                            "Internet is not available!",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this,
+                            "Enter a valid Rss feed url!",
+                            Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
@@ -251,5 +260,11 @@ public class MainActivity extends AppCompatActivity {
         } finally {
             inputStream.close();
         }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 }
