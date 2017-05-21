@@ -1,5 +1,8 @@
 package app.matolaypal.com.rssreader;
 
+/**
+ * Represent a simple feed model (without setter/getter, because unnecessary now)
+ */
 class RssFeedModel {
 
     String title;
