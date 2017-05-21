@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
@@ -93,9 +94,15 @@ public class MainActivity extends AppCompatActivity {
                                   RecyclerView.ViewHolder target) {
                 final int fromPosition = viewHolder.getAdapterPosition();
                 final int toPosition = target.getAdapterPosition();
-                RssFeedModel prev = mFeedModelList.remove(fromPosition);
-                mFeedModelList.add(toPosition > fromPosition ? toPosition - 1 : toPosition, prev);
-                listAdapter.notifyItemMoved(fromPosition, toPosition);
+                if (fromPosition < toPosition) {
+                    for (int i = fromPosition; i < toPosition; i++) {
+                        Collections.swap(mFeedModelList, i, i + 1);
+                    }
+                } else {
+                    for (int i = fromPosition; i > toPosition; i--) {
+                        Collections.swap(mFeedModelList, i, i - 1);
+                    }
+                }
                 listAdapter.notifyItemMoved(fromPosition, toPosition);
                 return true;
             }
