@@ -15,6 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:background="@drawable/btn_bg"
         android:text="@string/btn_fetch" />
 
     <android.support.design.widget.TextInputLayout
@@ -52,7 +53,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/feedDescription"
-        android:text="@string/feed_link" />
+        android:text="@string/feed_link"
+        android:autoLink="web"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
