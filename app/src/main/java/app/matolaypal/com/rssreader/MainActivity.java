@@ -1,7 +1,9 @@
 package app.matolaypal.com.rssreader;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -26,10 +28,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static android.text.TextUtils.isEmpty;
+
+import app.matolaypal.com.rssreader.FeedReaderContract.FeedEntry;
+
 
 /**
  * Responsible for whole UI.
@@ -53,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     private String mFeedLink;
     private String mFeedDescription;
 
+    private FeedReaderDbHelper mDbHelper;
+
     /**
      * Create activity, find views, set click listener for button and refresh listener for layout.
      * {@link ItemTouchHelper} allow that the feeds is sortable and deletable by touch.
@@ -61,6 +69,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mDbHelper = new FeedReaderDbHelper(getApplicationContext());
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(FeedEntry.COLUMN_NAME_TITLE, "Feed link");
+
+        db.insert(FeedEntry.TABLE_NAME, null, values);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mEditText = (EditText) findViewById(R.id.rssFeedEditText);
@@ -134,6 +150,12 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Sharing completed!", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onDestroy() {
+        mDbHelper.close();
+        super.onDestroy();
+    }
+
     /**
      * Responsible for AsyncTask, what get data from internet (based on feed link).
      */
@@ -199,6 +221,8 @@ public class MainActivity extends AppCompatActivity {
                 mFeedLinkTextView.setText("Feed Link: " + mFeedLink);
                 listAdapter = new RssFeedListAdapter(MainActivity.this, mFeedModelList);
                 mRecyclerView.setAdapter(listAdapter);
+                SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
             } else {
                 if (!isNetworkAvailable()) {
                     Toast.makeText(MainActivity.this,
